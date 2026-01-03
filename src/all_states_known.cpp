@@ -26,9 +26,7 @@ int main() {
     for (int i=1; i<=NUM_AGENTS; i++){
         agents.push_back(Agent(i, get_start_state(i), sim_start, SPEED, DIVE_TIME));
     }
-    
     for (float i=0; i<=SIM_TIME; i+=CONTROL_TIME_STEP){
-        std::cout << "Simulation time: " << i << std::endl;
         if (fmod(i, PLAN_TIME_STEP) < CONTROL_TIME_STEP){
             // Replan all agents
             for (auto it=agents.begin(); it < agents.end(); ++it){

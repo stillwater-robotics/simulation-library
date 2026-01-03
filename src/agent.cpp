@@ -2,10 +2,8 @@
 
 #include <sstream>
 
-#include <iostream>  // TODO REMOVE
-
 Agent::Agent(float id_, State initialState, uint32_t sim_start_, float speed, float dive_time){
-    pointGenerator = PointGenerator(1.0f, 1.0f, 1000.0f);
+    pointGenerator = PointGenerator(1.0f, 3.0f, 10.0f);
     trajectoryGenerator = TrajectoryGenerator(speed, dive_time);
     controller = Controller();
 
