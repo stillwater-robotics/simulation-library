@@ -31,11 +31,9 @@ Where `unix_time` is the time the simulation started at, `swarm_id` is the ID nu
 3. Go to the new `build` directory
 4. run `ninja`
 
-
 ## sim_tools
 Python code used to visulize simulation results.
 - plot.py: code to plot trajectories
-
 
 ## cpp_state_estimator
 State estimator class for Pico 2 W with example .ino usage file.
