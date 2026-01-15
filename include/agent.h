@@ -16,8 +16,10 @@ private:
     TrajectoryGenerator trajectoryGenerator;
     Controller controller;
 
+    float traj_gen_time;
     float traj_time;
     Pose desired;
+    int odds;
 
     uint32_t sim_start;
     Writer state_writer;
@@ -34,8 +36,9 @@ public:
     * @param sim_start start time of the simulation
     * @param speed average speed while moving in the plane
     * @param dive_time time spent at measurement depth
+    * @param replan_chance percent chance the system plans a new route
     */
-    Agent(float id_, State initialState, uint32_t sim_start_, float speed, float dive_time);
+    Agent(float id_, State initialState, uint32_t sim_start_, float speed, float dive_time, int replan_chance);
 
     /**
      * @brief Updates the desired trajectory, contains code that will be

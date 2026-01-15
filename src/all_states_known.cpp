@@ -4,16 +4,17 @@
 #include <cmath>
 #include <iostream>
 
-#define NUM_AGENTS 4
-#define SPEED 1
+#define NUM_AGENTS 100
+#define SPEED 0.5
 #define DIVE_TIME 5
+#define REPLAN_ODDS 100 ///(0.5*NUM_AGENTS)
 
-#define SIM_TIME 10
+#define SIM_TIME 60
 #define CONTROL_TIME_STEP 0.1
 #define PLAN_TIME_STEP 10*CONTROL_TIME_STEP
 
 State get_start_state(int id){
-    return State(Pose(id*pow(-1, id), id, 0, 0), Pose(0, 0, 0, 0));
+    return State(Pose(id*pow(-1, id), id, 0, id*3.14/2), Pose(0, 0, 0, 0));
 }
 
 int main() {
@@ -21,10 +22,12 @@ int main() {
     uint32_t sim_start = std::chrono::duration_cast<std::chrono::seconds>(
                    std::chrono::system_clock::now().time_since_epoch()
                    ).count();
+
+    std::cout << "Writing sim data to: sim_data_" << sim_start << std::endl;
     
     std::vector<Agent> agents;
     for (int i=1; i<=NUM_AGENTS; i++){
-        agents.push_back(Agent(i, get_start_state(i), sim_start, SPEED, DIVE_TIME));
+        agents.push_back(Agent(i, get_start_state(i), sim_start, SPEED, DIVE_TIME, REPLAN_ODDS));
     }
     for (float i=0; i<=SIM_TIME; i+=CONTROL_TIME_STEP){
         if (fmod(i, PLAN_TIME_STEP) < CONTROL_TIME_STEP){

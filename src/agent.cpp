@@ -1,14 +1,18 @@
 #include "agent.h"
 
+#include <cstdlib>
+#include <iomanip>
 #include <sstream>
 
-Agent::Agent(float id_, State initialState, uint32_t sim_start_, float speed, float dive_time){
-    pointGenerator = PointGenerator(1.0f, 3.0f, 10.0f);
+Agent::Agent(float id_, State initialState, uint32_t sim_start_, float speed, float dive_time, int replan_chance){
+    pointGenerator = PointGenerator(2.0f, 3.0f, 0.0f);
     trajectoryGenerator = TrajectoryGenerator(speed, dive_time);
     controller = Controller();
 
+    odds = replan_chance;
     id = id_;
     currentState = initialState;
+    traj_gen_time = 0;
     traj_time = 0;
     desired = currentState.pose;
 
@@ -26,6 +30,13 @@ Agent::Agent(float id_, State initialState, uint32_t sim_start_, float speed, fl
 }
 
 void Agent::Plan(std::vector<State> states, float time){
+    traj_gen_time = time;
+
+    int random_num = rand() % 101;
+    if (random_num >= odds && traj_gen_time >= 0.01){
+        return;
+    }
+
     std::vector<Pose> poses;
     for(auto it=states.begin(); it < states.end(); ++it){
         poses.push_back((*it).pose);
@@ -60,6 +71,6 @@ void Agent::WriteDesiredTrajectory(){
     directory << "sim_data_" << sim_start << "/" << id << "_trajectories/";
 
     std::stringstream filename;
-    filename << id << "_" << traj_time << ".csv";
+    filename << id << "_" << std::setfill('0') <<std::setw(10) << int(traj_gen_time*100) << ".csv";
     WriteTrajectory(trajectoryGenerator.trajectory, directory.str() + filename.str(), 0.1);
 }
