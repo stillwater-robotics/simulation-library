@@ -111,7 +111,7 @@ def evaluate_all_combinations(specs):
     return results
 
 if __name__ == "__main__":
-    specs = load_sensor_specs("sensor_specs.json")
+    specs = load_sensor_specs("./sensor_specs.json")
     results = evaluate_all_combinations(specs)
 
     print("\n=== Sensor Suite Ranking (lower Score = better) ===")
