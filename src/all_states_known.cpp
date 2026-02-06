@@ -4,10 +4,10 @@
 #include <cmath>
 #include <iostream>
 
-#define NUM_AGENTS 100
+#define NUM_AGENTS 10
 #define SPEED 0.5
 #define DIVE_TIME 5
-#define REPLAN_ODDS 100 ///(0.5*NUM_AGENTS)
+#define REPLAN_ODDS 100 //0.5*NUM_AGENTS
 
 #define SIM_TIME 60
 #define CONTROL_TIME_STEP 0.1
@@ -27,7 +27,7 @@ int main() {
     
     std::vector<Agent> agents;
     for (int i=1; i<=NUM_AGENTS; i++){
-        agents.push_back(Agent(i, get_start_state(i), sim_start, SPEED, DIVE_TIME, REPLAN_ODDS));
+        agents.push_back(Agent(i, get_start_state(i), sim_start, SPEED, DIVE_TIME, REPLAN_ODDS, CONTROL_TIME_STEP));
     }
     for (float i=0; i<=SIM_TIME; i+=CONTROL_TIME_STEP){
         if (fmod(i, PLAN_TIME_STEP) < CONTROL_TIME_STEP){

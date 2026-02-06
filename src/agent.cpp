@@ -4,11 +4,19 @@
 #include <iomanip>
 #include <sstream>
 
-Agent::Agent(float id_, State initialState, uint32_t sim_start_, float speed, float dive_time, int replan_chance){
+Agent::Agent(
+    float id_, 
+    State initialState, 
+    uint32_t sim_start_, 
+    float speed, 
+    float dive_time, 
+    int replan_chance, 
+    float timestep_
+    ){
     pointGenerator = PointGenerator(2.0f, 3.0f, 0.0f);
     trajectoryGenerator = TrajectoryGenerator(speed, dive_time);
-    controller = Controller();
 
+    timestep = timestep_;
     odds = replan_chance;
     id = id_;
     currentState = initialState;
@@ -42,14 +50,16 @@ void Agent::Plan(std::vector<State> states, float time){
         poses.push_back((*it).pose);
     }
     desired = pointGenerator.Update(currentState.pose, poses);
-    trajectoryGenerator.Update(currentState.pose, desired);
+    trajectoryGenerator.Update(currentState, desired);
 
     traj_time = time;
     return;
 }
 
 void Agent::Update(float time){
-    currentState = controller.Update(trajectoryGenerator.GetDesiredState(time-traj_time));
+    Input inputs = controller(currentState, trajectoryGenerator.GetDesiredState(time-traj_time), timestep);
+
+    currentState = dynamics(currentState, inputs, timestep);
     return;
 }
 

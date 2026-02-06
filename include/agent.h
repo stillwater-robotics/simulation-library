@@ -1,8 +1,12 @@
+#ifndef AGENT_HEADER
+#define AGENT_HEADER
+
 #include "common.h"
 #include "controller.h"
 #include "csv.h"
 #include "point_generator.h"
 #include "trajectory_generator.h"
+
 
 /**
  * @brief Simulation agent.
@@ -14,12 +18,12 @@ private:
 
     PointGenerator pointGenerator;
     TrajectoryGenerator trajectoryGenerator;
-    Controller controller;
 
     float traj_gen_time;
     float traj_time;
     Pose desired;
     int odds;
+    float timestep;
 
     uint32_t sim_start;
     Writer state_writer;
@@ -37,8 +41,9 @@ public:
     * @param speed average speed while moving in the plane
     * @param dive_time time spent at measurement depth
     * @param replan_chance percent chance the system plans a new route
+    * @param timestep_ time between each control input
     */
-    Agent(float id_, State initialState, uint32_t sim_start_, float speed, float dive_time, int replan_chance);
+    Agent(float id_, State initialState, uint32_t sim_start_, float speed, float dive_time, int replan_chance, float timestep_);
 
     /**
      * @brief Updates the desired trajectory, contains code that will be
@@ -63,3 +68,5 @@ public:
     void WriteDesiredState(float time);
     void WriteDesiredTrajectory();
 };
+
+#endif

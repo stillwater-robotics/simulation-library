@@ -15,6 +15,12 @@ class Agent:
         self.states = np.loadtxt(root / f"{id}_states.csv", delimiter=",")
         self.desired_poses = np.loadtxt(root / f"{id}_desired_poses.csv", delimiter=",")
 
+        if len(self.states.shape) < 2:
+            self.states = np.expand_dims(self.states, 0)
+        
+        if len(self.desired_poses.shape) < 2:
+            self.desired_poses = np.expand_dims(self.desired_poses, 0)
+
         # TODO replace 101 with expression
         self.trajectories = np.zeros([self.desired_poses.shape[0], 101, 10])
         files = [str(file) for file in (root / f"{id}_trajectories").iterdir()]
@@ -26,7 +32,12 @@ class Agent:
 def animate(agents: list[Agent], timestep: float, replan_timestep: float, lims: int = 15):
     fig, ax = plt.subplots()
 
+    ax.grid(True)
+    ax.set_aspect('equal')
+
     ax.set(xlim=[-lims, lims], ylim=[-lims, lims])
+
+    time_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)
 
     states = [
         ax.plot(agent.states[0, 1], agent.states[0, 2], f"o{agent.colour}")[0]
@@ -46,6 +57,7 @@ def animate(agents: list[Agent], timestep: float, replan_timestep: float, lims: 
     ]
 
     def update(frame: int):
+        time_text.set_text(f"Time: {timestep*frame:.2f}s")
         for i in range(len(states)):
             states[i].set_data(agents[i].states[frame, 1], agents[i].states[frame, 2])
 
