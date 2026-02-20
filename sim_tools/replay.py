@@ -47,7 +47,7 @@ def animate(agents: list[Agent], timestep: float, replan_timestep: float, lims: 
 
     def update(frame: int):
         for i in range(len(states)):
-            states[i].set_data(agents[i].states[frame, 1], agents[i].states[frame, 2])
+            states[i].set_data([agents[i].states[frame, 1]], [agents[i].states[frame, 2]])
 
         if frame * timestep % replan_timestep == 0:
             new_frame = int(frame * timestep / replan_timestep)
@@ -60,16 +60,19 @@ def animate(agents: list[Agent], timestep: float, replan_timestep: float, lims: 
                 return (states, desired_states, trajectories)
 
             for i in range(len(desired_states)):
+                # Do the same here for the desired_states points
                 desired_states[i].set_data(
-                    agents[i].desired_poses[new_frame, 1],
-                    agents[i].desired_poses[new_frame, 2],
+                    [agents[i].desired_poses[new_frame, 1]], 
+                    [agents[i].desired_poses[new_frame, 2]]
                 )
+                
+                # Trajectories are already sequences (slices), so they are fine:
                 trajectories[i].set_data(
                     agents[i].trajectories[new_frame, :, 1],
                     agents[i].trajectories[new_frame, :, 2],
                 )
 
-        return (states, desired_states, trajectories)
+        return states + desired_states + trajectories
 
     return ani.FuncAnimation(
         fig=fig,
@@ -79,10 +82,12 @@ def animate(agents: list[Agent], timestep: float, replan_timestep: float, lims: 
     )
 
 @click.command()
-@click.option('-f', '--folder', help="simulation data folder")
+@click.option('-f', '--folder', required=True, type=click.Path(exists=True), help="simulation data folder")
 @click.option('-l', '--limits', default=15, type=int, help="frame bounds")
 def main(folder: str, limits: int):
-    num_agents = len([file for file in Path(folder).iterdir() if file.is_dir()])
+    # Now 'folder' is guaranteed to be a valid string path
+    folder_path = Path(folder)
+    num_agents = len([file for file in folder_path.iterdir() if file.is_dir()])
     timestep = 0.1
     replan_timestep = 1
 
