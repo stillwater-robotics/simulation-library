@@ -24,8 +24,8 @@ set(DEPENDENCY_INCLUDES
 )
 set(DEPENDENCIES
   # GTest::gtest
-  ${CMAKE_SOURCE_DIR}/../data-collector/build/libdataCollector.so
-  ${CMAKE_SOURCE_DIR}/../trajectory-generator/build/libtrajectoryGenerator.so
+  ${CMAKE_SOURCE_DIR}/../data-collector/build/dataCollector.lib
+  ${CMAKE_SOURCE_DIR}/../trajectory-generator/build/trajectoryGenerator.lib
 )
 
 # Make shared library
@@ -34,7 +34,7 @@ set(SOURCES
     ./src/controller.cpp
 )
 
-add_library(simulator SHARED ${SOURCES})
+add_library(simulator STATIC ${SOURCES})
 target_include_directories(simulator 
   PUBLIC 
     ./include

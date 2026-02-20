@@ -4,7 +4,7 @@
 #include <cmath>
 #include <iostream>
 
-#define NUM_AGENTS 100
+#define NUM_AGENTS 10
 #define SPEED 0.5
 #define DIVE_TIME 5
 #define REPLAN_ODDS 100 ///(0.5*NUM_AGENTS)
