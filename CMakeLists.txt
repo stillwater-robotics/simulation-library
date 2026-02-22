@@ -15,17 +15,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # FetchContent_MakeAvailable(googletest)
 
+find_package(Eigen3 REQUIRED NO_MODULE)
+
 # dependency files and directories
 set(DEPENDENCY_INCLUDES
   ../data-collector/include
   ../data-collector/third-party
   ../trajectory-generator/include
   ../trajectory-generator/third-party
+  ../state-estimator/include
 )
 set(DEPENDENCIES
   # GTest::gtest
+  Eigen3::Eigen
   ${CMAKE_SOURCE_DIR}/../data-collector/build/dataCollector.lib
   ${CMAKE_SOURCE_DIR}/../trajectory-generator/build/trajectoryGenerator.lib
+  ${CMAKE_SOURCE_DIR}/../state-estimator/build/stateEstimator.lib
 )
 
 # Make shared library

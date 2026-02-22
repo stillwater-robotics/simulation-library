@@ -3,6 +3,7 @@
 #include "csv.h"
 #include "point_generator.h"
 #include "trajectory_generator.h"
+#include "state_estimator.h"
 
 /**
  * @brief Simulation agent.
@@ -10,7 +11,8 @@
 class Agent
 {
 private:
-    State currentState;
+    StateEstimator stateEstimator;
+    State trueState;
 
     PointGenerator pointGenerator;
     TrajectoryGenerator trajectoryGenerator;
@@ -22,7 +24,8 @@ private:
     int odds;
 
     uint32_t sim_start;
-    Writer state_writer;
+    Writer true_state_writer;
+    Writer estimated_state_writer;
     Writer desired_state_writer;
 
 public:
@@ -59,7 +62,8 @@ public:
     State ReadState();
 
     // writes the agents information
-    void WriteState(float time);
+    void WriteTrueState(float time);
+    void WriteEstimatedState(float time);
     void WriteDesiredState(float time);
     void WriteDesiredTrajectory();
 };
