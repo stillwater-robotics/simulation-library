@@ -93,7 +93,7 @@ void Agent::Update(float time){
     float noisy_gps_x = trueState.pose.x + gps_noise(generator);
     float noisy_gps_y = trueState.pose.y + gps_noise(generator);
     float noisy_press_z = trueState.pose.z + press_noise(generator);
-=
+
     stateEstimator.UpdateGPS(noisy_gps_x, noisy_gps_y);
     stateEstimator.UpdatePressure(noisy_press_z);
   
