@@ -108,6 +108,29 @@ def main(folder: str, limits: int):
     animation = animate(agents, timestep, replan_timestep, limits)
     plt.title("True (Solid) vs Estimated (Muted) Positions")
     plt.show()
+    
+    plot_average_error(agents, timestep)
+    
+def plot_average_error(agents: list[Agent], timestep: float):
+    num_timesteps = agents[0].true_states.shape[0]
+    errors = np.zeros((len(agents), num_timesteps))
+
+    for i, agent in enumerate(agents):
+        true_pos = agent.true_states[:, 1:3]
+        est_pos = agent.est_states[:, 1:3]
+        errors[i] = np.linalg.norm(true_pos - est_pos, axis=1)
+
+    avg_error = np.mean(errors, axis=0)
+    time = np.arange(num_timesteps) * timestep
+
+    plt.figure()
+    plt.plot(time, avg_error, label="Mean Estimation Error")
+    plt.xlabel("Time [s]")
+    plt.ylabel("Error [m]")
+    plt.title("Average Estimation Error Across All Robots")
+    plt.grid(True)
+    plt.legend()
+    plt.show()
 
 if __name__ == "__main__":
     main()

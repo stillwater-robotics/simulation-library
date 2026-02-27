@@ -86,7 +86,7 @@ void Agent::Update(float time){
     stateEstimator.Predict(accel_L, accel_R, 0, dt); // Assume zero vertical acceleration
 
     // Create noisy measurements for GPS and Pressure
-    static std::default_random_engine generator;
+    static std::default_random_engine generator(1); // 1 is seed
     std::normal_distribution<float> gps_noise(0.0, stateEstimator.std_gps);
     std::normal_distribution<float> press_noise(0.0, stateEstimator.std_press);
 
