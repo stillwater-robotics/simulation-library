@@ -49,7 +49,8 @@ int main() {
         // Update all agents
         for (auto it=agents.begin(); it < agents.end(); ++it){
             it->Update(i);
-            it->WriteState(i);
+            it->WriteTrueState(i);
+            it->WriteEstimatedState(i);
         }
     }
 }

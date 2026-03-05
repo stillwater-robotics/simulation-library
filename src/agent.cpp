@@ -3,6 +3,22 @@
 #include <cstdlib>
 #include <iomanip>
 #include <sstream>
+#include <random>
+
+// Helper function to convert Eigen state vector to State struct
+State matrixToState(Eigen::Matrix<float, 7, 1> x){
+    State state;
+    
+    state.pose.x = x(0);
+    state.pose.y = x(1);
+    state.pose.z = x(2);
+    state.pose.theta = x(3);
+    state.velocity.x = x(4);
+    state.velocity.y = x(5);
+    state.velocity.z = x(6);
+
+    return state;
+}
 
 Agent::Agent(
     float id_, 
@@ -19,18 +35,22 @@ Agent::Agent(
     timestep = timestep_;
     odds = replan_chance;
     id = id_;
-    currentState = initialState;
+    trueState = initialState;
     traj_gen_time = 0;
     traj_time = 0;
-    desired = currentState.pose;
+    desired = trueState.pose;
 
     sim_start = sim_start_;
     std::stringstream directory;
     directory << "sim_data_" << sim_start << "/";
 
     std::stringstream state_filename;
-    state_filename << id << "_states.csv";
-    state_writer = Writer(directory.str() + state_filename.str());
+    state_filename << id << "_true_states.csv";
+    true_state_writer = Writer(directory.str() + state_filename.str());
+
+    std::stringstream est_state_filename;
+    est_state_filename << id << "_estimated_states.csv";
+    estimated_state_writer = Writer(directory.str() + est_state_filename.str());
 
     std::stringstream desired_filename;
     desired_filename << id << "_desired_poses.csv";
@@ -49,8 +69,8 @@ void Agent::Plan(std::vector<State> states, float time){
     for(auto it=states.begin(); it < states.end(); ++it){
         poses.push_back((*it).pose);
     }
-    desired = pointGenerator.Update(currentState.pose, poses);
-    trajectoryGenerator.Update(currentState, desired);
+    desired = pointGenerator.Update(trueState.pose, poses);
+    trajectoryGenerator.Update(trueState, desired);
 
     traj_time = time;
     return;
@@ -67,19 +87,48 @@ void Agent::NoMove(float time){
 }
 
 void Agent::Update(float time){
-    Input inputs = controller(currentState, trajectoryGenerator.GetDesiredState(time-traj_time), timestep);
+    float dt = 0.1f; 
+    float current_traj_time = time - traj_time;
 
-    currentState = dynamics(currentState, inputs, timestep);
+    State desiredState = trajectoryGenerator.GetDesiredState(current_traj_time);
+    float v_desired = sqrtf(desiredState.velocity.x * desiredState.velocity.x + 
+                            desiredState.velocity.y * desiredState.velocity.y);
+
+    // Since the controller isn't done yet, use inverse kinematics to determine approximate control inputs
+    float target_vL = v_desired - (desiredState.velocity.theta * L_BASE / 2.0f);
+    float target_vR = v_desired + (desiredState.velocity.theta * L_BASE / 2.0f);
+    float accel_L = (target_vL - stateEstimator.x(IDX_VL)) / dt;
+    float accel_R = (target_vR - stateEstimator.x(IDX_VR)) / dt;
+  
+    trueState = controller.Update(desiredState); // Right now, this just sets the real state to the desired state (no control inputs)
+    stateEstimator.Predict(accel_L, accel_R, 0, dt); // Assume zero vertical acceleration
+
+    // Create noisy measurements for GPS and Pressure
+    static std::default_random_engine generator(1); // 1 is seed
+    std::normal_distribution<float> gps_noise(0.0, stateEstimator.std_gps);
+    std::normal_distribution<float> press_noise(0.0, stateEstimator.std_press);
+
+    float noisy_gps_x = trueState.pose.x + gps_noise(generator);
+    float noisy_gps_y = trueState.pose.y + gps_noise(generator);
+    float noisy_press_z = trueState.pose.z + press_noise(generator);
+
+    stateEstimator.UpdateGPS(noisy_gps_x, noisy_gps_y);
+    stateEstimator.UpdatePressure(noisy_press_z);
+  
     return;
 }
 
 State Agent::ReadState(){
-    // TODO add simulated state estimation error
-    return currentState;
+    return matrixToState(stateEstimator.x);
 }
 
-void Agent::WriteState(float time){
-    state_writer.Write(ReadState(), time);
+void Agent::WriteTrueState(float time){
+    true_state_writer.Write(trueState, time);
+}
+
+void Agent::WriteEstimatedState(float time){
+    State estState = ReadState();
+    estimated_state_writer.Write(estState, time);
 }
 
 void Agent::WriteDesiredState(float time){

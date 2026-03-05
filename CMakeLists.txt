@@ -6,6 +6,17 @@ project(SwarmAutonomySimulator)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# include(FetchContent)
+# FetchContent_Declare(
+#   googletest
+#   URL https://github.com/google/googletest/archive/6ec14dfd8c409d05fba94e18e3a02df35b874353.zip
+# )
+# # For Windows: Prevent overriding the parent project's compiler/linker settings
+# set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+# FetchContent_MakeAvailable(googletest)
+
+find_package(Eigen3 REQUIRED NO_MODULE)
+
 # dependency files and directories
 set(DEPENDENCY_INCLUDES
   ../controller/include
@@ -13,10 +24,14 @@ set(DEPENDENCY_INCLUDES
   ../data-collector/third-party
   ../trajectory-generator/include
   ../trajectory-generator/third-party
+  ../state-estimator/include
 )
 set(DEPENDENCIES
-  ${CMAKE_SOURCE_DIR}/../data-collector/build/libdataCollector.so
-  ${CMAKE_SOURCE_DIR}/../trajectory-generator/build/libtrajectoryGenerator.so
+  # GTest::gtest
+  Eigen3::Eigen
+  ${CMAKE_SOURCE_DIR}/../data-collector/build/dataCollector.lib
+  ${CMAKE_SOURCE_DIR}/../trajectory-generator/build/trajectoryGenerator.lib
+  ${CMAKE_SOURCE_DIR}/../state-estimator/build/stateEstimator.lib
 )
 
 # Make shared library
@@ -24,7 +39,7 @@ set(SOURCES
     ./src/agent.cpp
 )
 
-add_library(simulator SHARED ${SOURCES})
+add_library(simulator STATIC ${SOURCES})
 target_include_directories(simulator 
   PUBLIC 
     ./include
