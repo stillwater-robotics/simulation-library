@@ -36,9 +36,14 @@ target_link_libraries(simulator
 )
 
 # Make and link simulation executable
-add_executable(all_states_known ./src/all_states_known.cpp)
-target_include_directories(all_states_known PUBLIC ${DEPENDENCY_INCLUDES})
-target_link_libraries(all_states_known PUBLIC simulator ${DEPENDENCIES})
+add_executable(all_neighbours_ground_truth_known ./src/all_neighbours_ground_truth_known.cpp)
+target_include_directories(all_neighbours_ground_truth_known PUBLIC ${DEPENDENCY_INCLUDES})
+target_link_libraries(all_neighbours_ground_truth_known PUBLIC simulator ${DEPENDENCIES})
+
+# Make and link simulation executable
+add_executable(one_smart_ground_truth ./src/one_smart_ground_truth.cpp)
+target_include_directories(one_smart_ground_truth PUBLIC ${DEPENDENCY_INCLUDES})
+target_link_libraries(one_smart_ground_truth PUBLIC simulator ${DEPENDENCIES})
 
 # Make and link controller execulatble
 add_executable(follow ./src/follow.cpp)

@@ -56,6 +56,16 @@ void Agent::Plan(std::vector<State> states, float time){
     return;
 }
 
+void Agent::NoMove(float time){
+    traj_gen_time = time;
+
+    desired = currentState.pose;
+    trajectoryGenerator.Update(currentState, desired);
+
+    traj_time = time;
+    return;
+}
+
 void Agent::Update(float time){
     Input inputs = controller(currentState, trajectoryGenerator.GetDesiredState(time-traj_time), timestep);
 

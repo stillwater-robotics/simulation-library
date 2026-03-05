@@ -51,7 +51,14 @@ public:
      * 
      * @param states States the neighboring agents
      */
-    void Plan(std::vector<State> states, float time); 
+    void Plan(std::vector<State> states, float time);
+
+    /**
+     * @brief Updates the trajectory such that desired==current, for mock swarm members.
+     * 
+     * @param time For keeping track of time.
+    */
+    void NoMove(float time); 
 
     /**
      * @brief Updates the state of the robot
