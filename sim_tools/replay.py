@@ -15,7 +15,10 @@ class Agent:
         self.est_states = np.loadtxt(root / f"{id}_estimated_states.csv", delimiter=",")
         self.desired_poses = np.loadtxt(root / f"{id}_desired_poses.csv", delimiter=",")
 
-        if len(self.states.shape) < 2:
+        if len(self.true_states.shape) < 2:
+            self.states = np.expand_dims(self.states, 0)
+
+        if len(self.est_states.shape) < 2:
             self.states = np.expand_dims(self.states, 0)
         
         if len(self.desired_poses.shape) < 2:

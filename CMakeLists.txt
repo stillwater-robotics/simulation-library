@@ -29,9 +29,9 @@ set(DEPENDENCY_INCLUDES
 set(DEPENDENCIES
   # GTest::gtest
   Eigen3::Eigen
-  ${CMAKE_SOURCE_DIR}/../data-collector/build/dataCollector.lib
-  ${CMAKE_SOURCE_DIR}/../trajectory-generator/build/trajectoryGenerator.lib
-  ${CMAKE_SOURCE_DIR}/../state-estimator/build/stateEstimator.lib
+  ${CMAKE_SOURCE_DIR}/../data-collector/build/libdataCollector.a
+  ${CMAKE_SOURCE_DIR}/../trajectory-generator/build/libtrajectoryGenerator.a
+  ${CMAKE_SOURCE_DIR}/../state-estimator/build/libstateEstimator.a
 )
 
 # Make shared library
@@ -51,9 +51,9 @@ target_link_libraries(simulator
 )
 
 # Make and link simulation executable
-add_executable(all_neighbours_ground_truth_known ./src/all_neighbours_ground_truth_known.cpp)
-target_include_directories(all_neighbours_ground_truth_known PUBLIC ${DEPENDENCY_INCLUDES})
-target_link_libraries(all_neighbours_ground_truth_known PUBLIC simulator ${DEPENDENCIES})
+add_executable(all_states_known ./src/all_states_known.cpp)
+target_include_directories(all_states_known PUBLIC ${DEPENDENCY_INCLUDES})
+target_link_libraries(all_states_known PUBLIC simulator ${DEPENDENCIES})
 
 # Make and link simulation executable
 add_executable(one_smart_ground_truth ./src/one_smart_ground_truth.cpp)

@@ -68,7 +68,7 @@ int main() {
         // Update agent 0
         agents[0].Update(i);
         for (auto it=agents.begin(); it < agents.end(); ++it){
-            it->WriteState(i);
+            it->WriteTrueState(i);
         }
     }
 }

@@ -80,4 +80,6 @@ public:
     void WriteDesiredTrajectory();
 };
 
+State matrixToState(Eigen::Matrix<float, 7, 1> x);
+
 #endif
