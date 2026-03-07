@@ -75,13 +75,22 @@ public:
     void NoMove(float time); 
 
     /**
+     * @brief Sets the desired state of the agent and generates a trajectory
+     * 
+     * @param desired_state desired state to set
+    */
+    void SetGoal(Pose desired_state);
+
+    /**
      * @brief Updates the state of the robot
      * 
      * @param time_step Time in seconds since last update
     */
     void Update(float time);
 
-    // returns the current state of the agent
+    /**
+     * @brief returns the current estimated state of the agent
+    */
     State ReadState();
 
     // writes the agents information

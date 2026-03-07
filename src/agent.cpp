@@ -89,6 +89,14 @@ void Agent::NoMove(float time){
     return;
 }
 
+void Agent::SetGoal(Pose desired_state){
+    desired = desired_state;
+    trajectoryGenerator.Update(trueState, desired);
+    
+    return;
+}
+
+
 void Agent::Update(float time){
     float dt = timestep; 
     float current_traj_time = time - traj_time;
@@ -100,17 +108,8 @@ void Agent::Update(float time){
     Input input = controller(ReadState(), desiredState, trajectoryGenerator.GetDesiredAcceleration(current_traj_time));
     trueState = dynamics(trueState, input, timestep);
 
-    // TODO invert from rpm back to acceleration
-    // float accel_L = input.left;
-    // float accel_R = input.right;
-
-    // Since the controller isn't done yet, use inverse kinematics to determine approximate control inputs
-    float target_vL = v_desired - (desiredState.velocity.theta * L_BASE / 2.0f);
-    float target_vR = v_desired + (desiredState.velocity.theta * L_BASE / 2.0f);
-    float accel_L = (target_vL - stateEstimator.x(IDX_VL)) / dt;
-    float accel_R = (target_vR - stateEstimator.x(IDX_VR)) / dt;
-  
-    stateEstimator.Predict(accel_L, accel_R, 0, dt); // Assume zero vertical acceleration
+    Input acc = acc_from_input(ReadState(), input);
+    stateEstimator.Predict(acc.left, acc.right, acc.ballast, dt);
 
     // Create noisy measurements for GPS and Pressure
     static std::default_random_engine generator(1); // 1 is seed
