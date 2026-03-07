@@ -46,7 +46,18 @@ public:
     * @param replan_chance percent chance the system plans a new route
     * @param timestep_ time between each control input
     */
-    Agent(float id_, State initialState, uint32_t sim_start_, float speed, float dive_time, int replan_chance, float timestep_);
+    Agent(
+        float id_,
+        State initialState,
+        uint32_t sim_start_,
+        float speed,
+        float dive_time,
+        int replan_chance,
+        float timestep_,
+        float distance = 2,
+        float dive_depth = 3,
+        float error_threshold = 0
+    );
 
     /**
      * @brief Updates the desired trajectory, contains code that will be

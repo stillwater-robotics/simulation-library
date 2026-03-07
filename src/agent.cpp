@@ -21,15 +21,18 @@ State matrixToState(Eigen::Matrix<float, 7, 1> x){
 }
 
 Agent::Agent(
-    float id_, 
-    State initialState, 
-    uint32_t sim_start_, 
-    float speed, 
-    float dive_time, 
-    int replan_chance, 
-    float timestep_
+        float id_, 
+        State initialState, 
+        uint32_t sim_start_, 
+        float speed, 
+        float dive_time, 
+        int replan_chance, 
+        float timestep_,
+        float distance,
+        float dive_depth,
+        float error_threshold
     ){
-    pointGenerator = PointGenerator(2.0f, 3.0f, 0.0f);
+    pointGenerator = PointGenerator(distance, dive_depth, error_threshold);
     trajectoryGenerator = TrajectoryGenerator(speed, dive_time);
 
     timestep = timestep_;

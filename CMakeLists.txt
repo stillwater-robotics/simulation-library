@@ -56,6 +56,11 @@ target_include_directories(all_states_known PUBLIC ${DEPENDENCY_INCLUDES})
 target_link_libraries(all_states_known PUBLIC simulator ${DEPENDENCIES})
 
 # Make and link simulation executable
+add_executable(all_states_known_dive ./src/all_states_known_dive.cpp)
+target_include_directories(all_states_known_dive PUBLIC ${DEPENDENCY_INCLUDES})
+target_link_libraries(all_states_known_dive PUBLIC simulator ${DEPENDENCIES})
+
+# Make and link simulation executable
 add_executable(one_smart ./src/one_smart.cpp)
 target_include_directories(one_smart PUBLIC ${DEPENDENCY_INCLUDES})
 target_link_libraries(one_smart PUBLIC simulator ${DEPENDENCIES})
