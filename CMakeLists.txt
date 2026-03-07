@@ -56,9 +56,9 @@ target_include_directories(all_states_known PUBLIC ${DEPENDENCY_INCLUDES})
 target_link_libraries(all_states_known PUBLIC simulator ${DEPENDENCIES})
 
 # Make and link simulation executable
-add_executable(one_smart_ground_truth ./src/one_smart_ground_truth.cpp)
-target_include_directories(one_smart_ground_truth PUBLIC ${DEPENDENCY_INCLUDES})
-target_link_libraries(one_smart_ground_truth PUBLIC simulator ${DEPENDENCIES})
+add_executable(one_smart ./src/one_smart.cpp)
+target_include_directories(one_smart PUBLIC ${DEPENDENCY_INCLUDES})
+target_link_libraries(one_smart PUBLIC simulator ${DEPENDENCIES})
 
 # Make and link controller execulatble
 add_executable(follow ./src/follow.cpp)
