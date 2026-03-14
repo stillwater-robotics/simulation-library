@@ -26,12 +26,25 @@ set(DEPENDENCY_INCLUDES
   ../trajectory-generator/third-party
   ../state-estimator/include
 )
+
+find_library(DATA_COLLECTOR_LIB 
+             NAMES dataCollector 
+             PATHS "${CMAKE_SOURCE_DIR}/../data-collector/build")
+
+find_library(STATE_ESTIMATOR_LIB
+             NAMES stateEstimator
+             PATHS "${CMAKE_SOURCE_DIR}/../state-estimator/build") 
+
+find_library(TRAJECTORY_GENERATOR_LIB
+             NAMES trajectoryGenerator
+             PATHS "${CMAKE_SOURCE_DIR}/../trajectory-generator/build")
+             
 set(DEPENDENCIES
   # GTest::gtest
   Eigen3::Eigen
-  ${CMAKE_SOURCE_DIR}/../data-collector/build/libdataCollector.a
-  ${CMAKE_SOURCE_DIR}/../trajectory-generator/build/libtrajectoryGenerator.a
-  ${CMAKE_SOURCE_DIR}/../state-estimator/build/libstateEstimator.a
+  ${DATA_COLLECTOR_LIB}
+  ${STATE_ESTIMATOR_LIB}
+  ${TRAJECTORY_GENERATOR_LIB}
 )
 
 # Make shared library
