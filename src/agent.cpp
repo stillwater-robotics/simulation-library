@@ -5,21 +5,6 @@
 #include <sstream>
 #include <random>
 
-// Helper function to convert Eigen state vector to State struct
-State matrixToState(Eigen::Matrix<float, 7, 1> x){
-    State state;
-    
-    state.pose.x = x(0);
-    state.pose.y = x(1);
-    state.pose.z = x(2);
-    state.pose.theta = x(3);
-    state.velocity.x = x(4);
-    state.velocity.y = x(5);
-    state.velocity.z = x(6);
-
-    return state;
-}
-
 Agent::Agent(
         float id_, 
         State initialState, 
@@ -31,19 +16,22 @@ Agent::Agent(
         float distance,
         float dive_depth,
         float error_threshold
-    ){
+    ) :
+    id(static_cast<int>(id_)),
+    trueState(initialState),
+    timestep(timestep_),
+    sim_start(sim_start_)
+    {
+
     pointGenerator = PointGenerator(distance, dive_depth, error_threshold);
     trajectoryGenerator = TrajectoryGenerator(speed, dive_time);
+    stateEstimator = StateEstimator(Pose(0,0,0), timestep_);
 
-    timestep = timestep_;
     odds = replan_chance;
-    id = id_;
-    trueState = initialState;
     traj_gen_time = 0;
     traj_time = 0;
     desired = trueState.pose;
 
-    sim_start = sim_start_;
     std::stringstream directory;
     directory << "sim_data_" << sim_start << "/";
 
@@ -96,7 +84,6 @@ void Agent::SetGoal(Pose desired_state){
     return;
 }
 
-
 void Agent::Update(float time){
     float dt = timestep; 
     float current_traj_time = time - traj_time;
@@ -105,29 +92,23 @@ void Agent::Update(float time){
     float v_desired = sqrtf(desiredState.velocity.x * desiredState.velocity.x + 
                             desiredState.velocity.y * desiredState.velocity.y);
 
-    Input input = controller(ReadState(), desiredState, trajectoryGenerator.GetDesiredAcceleration(current_traj_time));
+    Input input = controller(stateEstimator.GetState(), desiredState, trajectoryGenerator.GetDesiredAcceleration(current_traj_time));
     trueState = dynamics(trueState, input, timestep);
+    stateEstimator.Predict(input);
 
-    Input acc = acc_from_input(ReadState(), input);
-    stateEstimator.Predict(acc.left, acc.right, acc.ballast, dt);
-
-    // Create noisy measurements for GPS and Pressure
-    static std::default_random_engine generator(1); // 1 is seed
-    std::normal_distribution<float> gps_noise(0.0, stateEstimator.std_gps);
-    std::normal_distribution<float> press_noise(0.0, stateEstimator.std_press);
-
-    float noisy_gps_x = trueState.pose.x + gps_noise(generator);
-    float noisy_gps_y = trueState.pose.y + gps_noise(generator);
-    float noisy_press_z = trueState.pose.z + press_noise(generator);
-
-    stateEstimator.UpdateGPS(noisy_gps_x, noisy_gps_y);
-    stateEstimator.UpdatePressure(noisy_press_z);
+    static std::default_random_engine generator(1);
+    std::normal_distribution<float> gps_noise(0.0, 1.5);
+    std::normal_distribution<float> press_noise(0.0, 0.1);
+    stateEstimator.UpdateGPS(trueState.pose.x + gps_noise(generator), trueState.pose.y + gps_noise(generator));  
+    stateEstimator.UpdatePressure(trueState.pose.z + press_noise(generator));
   
+    Input acc = acc_from_input(trueState, input);
+    stateEstimator.UpdateIMU(acc.left, acc.right, acc.ballast);
     return;
 }
 
 State Agent::ReadState(){
-    return matrixToState(stateEstimator.x);
+    return stateEstimator.GetState();
 }
 
 void Agent::WriteTrueState(float time){
