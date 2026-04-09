@@ -31,7 +31,8 @@ class Agent:
 
         self.trajectories = np.zeros([self.desired_poses.shape[0], traj_len, 10])
         for i, file in enumerate(files):
-            self.trajectories[i] = np.loadtxt(file, delimiter=",")
+            loaded = np.loadtxt(file, delimiter=",")
+            self.trajectories[i, 0:loaded.shape[0]] = loaded 
 
 def animate(agents: list[Agent], timestep: float, replan_timestep: float, lims: int = 15):
     fig, ax = plt.subplots()
@@ -93,7 +94,7 @@ def animate(agents: list[Agent], timestep: float, replan_timestep: float, lims: 
                     agents[i].trajectories[new_frame, :, 2],
                 )
 
-        return true_points + est_points + desired_states + trajectories
+        return [time_text] + true_points + est_points + desired_states + trajectories
 
     return ani.FuncAnimation(
         fig=fig,
@@ -122,9 +123,9 @@ def main(folder: str, limits: int):
     plt.title("True (Solid) vs Estimated (Muted) Positions")
     plt.show()
     
-    plot_average_error(agents, timestep)
+    plot_average_estimation_error(agents, timestep)
     
-def plot_average_error(agents: list[Agent], timestep: float):
+def plot_average_estimation_error(agents: list[Agent], timestep: float):
     num_timesteps = agents[0].true_states.shape[0]
     errors = np.zeros((len(agents), num_timesteps))
 
